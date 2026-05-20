@@ -3,37 +3,37 @@ export const runtime = "nodejs";
 import { pool } from "@/lib/db";
 import { NextResponse } from "next/server";
 
-// OBTENER ACTIVOS
+// OBTENER USUARIOS
 export async function GET() {
-  const result = await pool.query("SELECT * FROM activos ORDER BY id DESC");
+  const result = await pool.query("SELECT * FROM usuarios ORDER BY id DESC");
 
   return NextResponse.json(result.rows);
 }
 
-// CREAR ACTIVO
+// CREAR USUARIO
 export async function POST(req: Request) {
   const body = await req.json();
 
-  const { nombre, tipo, estado } = body;
+  const { nombre, correo } = body;
 
-  if (!nombre || !tipo || !estado) {
+  if (!nombre || !correo) {
     return NextResponse.json(
       { error: "Todos los campos son obligatorios" },
       { status: 400 },
     );
   }
 
-  await pool.query(
-    "INSERT INTO activos (nombre, tipo, estado) VALUES ($1, $2, $3)",
-    [nombre, tipo, estado],
-  );
+  await pool.query("INSERT INTO usuarios (nombre, correo) VALUES ($1, $2)", [
+    nombre,
+    correo,
+  ]);
 
   return NextResponse.json({
-    message: "Activo creado",
+    message: "Usuario creado",
   });
 }
 
-// ELIMINAR ACTIVO
+// ELIMINAR USUARIO
 export async function DELETE(req: Request) {
   const body = await req.json();
 
@@ -43,9 +43,9 @@ export async function DELETE(req: Request) {
     return NextResponse.json({ error: "ID requerido" }, { status: 400 });
   }
 
-  await pool.query("DELETE FROM activos WHERE id = $1", [id]);
+  await pool.query("DELETE FROM usuarios WHERE id = $1", [id]);
 
   return NextResponse.json({
-    message: "Activo eliminado",
+    message: "Usuario eliminado",
   });
 }

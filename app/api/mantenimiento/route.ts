@@ -3,20 +3,22 @@ export const runtime = "nodejs";
 import { pool } from "@/lib/db";
 import { NextResponse } from "next/server";
 
-// OBTENER ACTIVOS
+// OBTENER MANTENIMIENTOS
 export async function GET() {
-  const result = await pool.query("SELECT * FROM activos ORDER BY id DESC");
+  const result = await pool.query(
+    "SELECT * FROM mantenimientos ORDER BY id DESC",
+  );
 
   return NextResponse.json(result.rows);
 }
 
-// CREAR ACTIVO
+// CREAR MANTENIMIENTO
 export async function POST(req: Request) {
   const body = await req.json();
 
-  const { nombre, tipo, estado } = body;
+  const { equipo, descripcion } = body;
 
-  if (!nombre || !tipo || !estado) {
+  if (!equipo || !descripcion) {
     return NextResponse.json(
       { error: "Todos los campos son obligatorios" },
       { status: 400 },
@@ -24,16 +26,16 @@ export async function POST(req: Request) {
   }
 
   await pool.query(
-    "INSERT INTO activos (nombre, tipo, estado) VALUES ($1, $2, $3)",
-    [nombre, tipo, estado],
+    "INSERT INTO mantenimientos (equipo, descripcion) VALUES ($1, $2)",
+    [equipo, descripcion],
   );
 
   return NextResponse.json({
-    message: "Activo creado",
+    message: "Mantenimiento creado",
   });
 }
 
-// ELIMINAR ACTIVO
+// ELIMINAR MANTENIMIENTO
 export async function DELETE(req: Request) {
   const body = await req.json();
 
@@ -43,9 +45,9 @@ export async function DELETE(req: Request) {
     return NextResponse.json({ error: "ID requerido" }, { status: 400 });
   }
 
-  await pool.query("DELETE FROM activos WHERE id = $1", [id]);
+  await pool.query("DELETE FROM mantenimientos WHERE id = $1", [id]);
 
   return NextResponse.json({
-    message: "Activo eliminado",
+    message: "Mantenimiento eliminado",
   });
 }
